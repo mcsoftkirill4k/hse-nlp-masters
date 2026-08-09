@@ -1,5 +1,14 @@
 # data & models
 quora.txt
+quora_raw.txt
+quora_processed.txt
+war_and_peace_*.txt
+data.txt
+vocab.py
+train.en
+train.ru
+train.bpe.*
+bpe_rules.*
 *.bin
 *.vec
 *.model
@@ -11,6 +20,11 @@ week_02_salary_ru/data/hh_vacancies_raw.jsonl
 week_02_salary_ru/data/vacancies_clean.csv
 week_02_salary_ru/artifacts/navec_*.tar
 week_02_salary_ru/artifacts/salary_ru_best.pt
+
+# RAG / agents runtime
+**/artifacts/
+*.sqlite
+*.db
 
 # python / jupyter
 .venv/
