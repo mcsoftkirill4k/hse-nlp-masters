@@ -1,82 +1,49 @@
-# Week 2 mini-research: предсказание зарплаты по вакансиям hh.ru (RU)
+# Week 2 — зарплата по вакансиям hh.ru
 
-Адаптация семинара HSE NLP (salary prediction / TextCNN) под российский рынок IT-вакансий.
+Тот же пайплайн, что в семинаре по salary prediction, но на русских IT-вакансиях.
 
-| Было в семинаре | Здесь |
-|-----------------|--------|
-| Train_rev1 (UK, £) | IT-вакансии hh.ru (RUR) |
-| `glove-twitter-100` | **Navec** (русские word embeddings, 300d) |
-| Title + FullDescription | Title (`name`) + skills / specialization |
-| categorical: Company, Location, … | город, опыт, график, тип занятости |
+## Что поменял относительно семинара
 
-## Зачем
-
-Семинарный пайплайн работает на английских вакансиях и отдаёт фунты. Для портфолио полезнее показать тот же подход на русском: токенизация → словарь → pretrained embeddings → TextCNN → регрессия `log1p(salary)`.
+- данные: hh.ru (RUR), не UK Kaggle (£)
+- эмбеддинги: Navec 300d вместо GloVe Twitter
+- текст: название вакансии + skills
+- категории: город, опыт, график, тип занятости
+- таргет: `log1p` от зарплаты в ₽
 
 ## Данные
 
-Источник: открытый дамп IT-вакансий hh.ru  
-[`Kubik91/hac_19_10`](https://github.com/Kubik91/hac_19_10) → `finall_test.csv`  
-(~13k строк, все с валютой `RUR`).
+Взял открытый дамп IT-вакансий: [Kubik91/hac_19_10](https://github.com/Kubik91/hac_19_10) (`finall_test.csv`).
 
-Таргет:
-- если есть `from` и `to` → среднее;
-- иначе доступная граница;
-- `gross=True` → грубо `* 0.87` (на руки);
-- фильтр выбросов: 20 000 … 400 000 ₽.
+Зарплату считаю так: среднее from/to, если gross — примерно `* 0.87`, выбросы режу 20k–400k ₽.
 
-> Dream Job / похожие агрегаторы зарплат публичного датасета не отдают; вакансии там часто ведут на hh.ru. Поэтому взят готовый hh-дамп, а не парсинг закрытых страниц отзывов.
+У Dream Job нормального публичного датасета нет, поэтому hh-дамп.
 
-## Как запустить
-
-Из корня репозитория:
+## Запуск
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Navec (~51MB), если ещё нет в artifacts/
 curl -L -o week_02_salary_ru/artifacts/navec_hudlit_v1_12B_500K_300d_100q.tar \
   https://storage.yandexcloud.net/natasha-navec/packs/navec_hudlit_v1_12B_500K_300d_100q.tar
 
 python week_02_salary_ru/train_salary_ru.py
 ```
 
-Ноутбук с разбором пайплайна: [`salary_prediction_ru.ipynb`](salary_prediction_ru.ipynb).
+Ноутбук: `salary_prediction_ru.ipynb`.
 
-## Артефакты после обучения
+## Результат (CPU, 8 epoch)
 
-| файл | содержание |
-|------|------------|
-| `artifacts/metrics.json` | history по epoch, best MAE |
-| `artifacts/salary_ru_best.pt` | веса + vocab + DictVectorizer |
-| `artifacts/demo_predictions.json` | несколько примеров pred vs true |
-| `data/vacancies_clean.csv` | очищенный train-ready датасет |
+- ~12.7k вакансий после чистки
+- покрытие словаря Navec ~78%
+- MAE на val ≈ **23.6k ₽**
 
-Крупные файлы (`*.tar`, сырой csv, `.pt`) в git по возможности не коммитятся — см. `.gitignore`.
+Это учебный baseline, не оценка рынка «как есть».
 
-## Результаты (локальный прогон, CPU, 8 epochs)
+## Файлы
 
-| метрика | значение |
-|---------|----------|
-| clean rows | 12 759 |
-| Navec coverage | 78.2% словаря |
-| best **MAE ₽** (val) | **≈ 23 600** |
-| best mae_log | ≈ 0.33 |
-| best mse_log | ≈ 0.18 |
-
-Примеры `demo_predictions.json` (true vs pred) лежат в `artifacts/`.
-
-Это учебный baseline, не прод-модель рынка труда: нет полного HTML-описания вакансии, данные устаревают, вилки на hh часто неполные.
-
-## Структура
-
-```
-week_02_salary_ru/
-  README.md
-  train_salary_ru.py
-  salary_prediction_ru.ipynb
-  data/
-  artifacts/
-```
+- `train_salary_ru.py` — обучение
+- `salary_prediction_ru.ipynb` — разбор
+- `data/` — данные / sample
+- `artifacts/` — метрики и веса (крупное в git не кладу)
