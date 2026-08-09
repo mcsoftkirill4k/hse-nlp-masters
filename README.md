@@ -9,10 +9,11 @@
 | Папка | Тема |
 |-------|------|
 | [`week_01_word_embeddings/`](week_01_word_embeddings/) | Word2Vec / FastText / GloVe, OOV, PCA & t-SNE |
+| [`week_02_salary_ru/`](week_02_salary_ru/) | TextCNN salary prediction на hh.ru (RU) + Navec |
 
 ## Стек
 
-Python, `nltk`, `gensim`, `scikit-learn`, `bokeh`, позже — PyTorch / HuggingFace / LlamaIndex (по программе курса).
+Python, `nltk`, `gensim`, `scikit-learn`, `bokeh`, `torch`, `navec`; дальше по курсу — HuggingFace / LlamaIndex.
 
 ## Как запускать
 

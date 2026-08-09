@@ -4,6 +4,13 @@ quora.txt
 *.vec
 *.model
 gensim-data/
+*.tar
+*.pt
+week_02_salary_ru/data/hh_it_vacancies.csv
+week_02_salary_ru/data/hh_vacancies_raw.jsonl
+week_02_salary_ru/data/vacancies_clean.csv
+week_02_salary_ru/artifacts/navec_*.tar
+week_02_salary_ru/artifacts/salary_ru_best.pt
 
 # python / jupyter
 .venv/
